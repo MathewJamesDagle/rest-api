@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express"
-import { UnitUser, User } from "./user.interface"
+import { UnitUser, User} from "./user.interface"
 import {StatusCodes} from "http-status-codes"
 import * as database from "./user.database"
 
@@ -123,5 +123,26 @@ userRouter.delete("/user/:id", async (req : Request, res : Response) => {
         return res.status(StatusCodes.OK).json({msg : "User deleted"})
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+    }
+})
+
+userRouter.get("/users/search", async (req : Request, res : Response) => {
+    const emailFilter = req.query.email as string;
+    const nameFilter = req.query.name as string;
+  
+    if (!nameFilter && !emailFilter) {
+        const allUsers : UnitUser[] = await database.findAll()
+        return res.status(StatusCodes.OK).json(allUsers)
+    }
+  
+    try {
+      // Apply filtering based on query parameters
+    if(nameFilter || emailFilter){
+        let name: User[] = await database.search(nameFilter,emailFilter);
+        res.json(name);
+    }
+
+    } catch (error) {
+        return res.status(StatusCodes.OK).json([])
     }
 })

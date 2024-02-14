@@ -1,4 +1,4 @@
-import { User, UnitUser, Users } from "./user.interface";
+import { User, UnitUser, Users} from "./user.interface";
 import bcrypt from "bcryptjs"
 import {v4 as random} from "uuid"
 import fs from "fs"
@@ -120,3 +120,14 @@ export const remove = async (id : string) : Promise<null | void> => {
 
     saveUsers()
 }
+  
+export const search =  async (name: string, email: string): Promise<UnitUser[]> => {
+    
+    const allUsers = await findAll();
+
+    return allUsers.filter(user => {
+        const nameMatch = user.username.includes(name);
+        const emailMatch = user.email.includes(email);
+        return nameMatch  || emailMatch;
+    });
+};
